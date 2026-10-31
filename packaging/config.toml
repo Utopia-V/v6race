@@ -1,0 +1,33 @@
+# v6race configuration. Every option is optional; defaults are in src/v6race/config.py.
+
+# Parallel IPv6 connects per wave, number of waves, seconds between waves,
+# and the overall deadline before falling back to IPv4 by host name.
+wave_size = 4
+waves = 2
+wave_interval = 1.0
+connect_timeout = 3.0
+
+# Skip IPv6 for a /64 for this many seconds after a whole race to it failed
+# (blocked foreign sites, broken routes).
+dead_ttl = 600
+
+# Reject QUIC (UDP 443) over global IPv6 so browsers switch to raced TCP.
+reject_quic = true
+
+# Log full addresses and host names (journalctl -u v6race). Off for privacy.
+log_addresses = false
+
+# DNS servers for the IPv4 fallback, queried directly (not through Mihomo).
+fallback_dns = ["223.5.5.5", "119.29.29.29"]
+
+# Last fallback: hand the connection to Mihomo's mixed port by host name, so its
+# rules decide. Used when direct IPv4 fails. Empty string disables it.
+mihomo_proxy = "127.0.0.1:7890"
+
+# Sites that always use IPv4 (domain and its subdomains), for accounts with
+# strict risk control. Setting this replaces the built-in list in config.py.
+# v4_only = ["alipay.com", "taobao.com", "example.com"]
+
+# Device whose bound sockets are intercepted too (Mihomo binds its dials to it).
+# Empty: the default IPv6 route's device at service start.
+# interface = ""

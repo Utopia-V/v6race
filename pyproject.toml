@@ -1,0 +1,23 @@
+[project]
+name = "v6race"
+version = "0.1.0"
+description = "Race parallel IPv6 TCP connects to get through networks that randomly drop flows"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+v6race = "v6race.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

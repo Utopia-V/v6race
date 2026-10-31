@@ -1,0 +1,35 @@
+[Unit]
+Description=v6race: race parallel IPv6 TCP connects through a flow-dropping network
+After=network-online.target
+Wants=network-online.target
+# A configuration that can't start shouldn't retry forever.
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+Environment=PYTHONPATH=/opt/v6race/lib
+# Not -I: that would drop PYTHONPATH. -s skips user site-packages.
+ExecStart=/usr/bin/python3 -s -m v6race run
+# Safety net: remove the nftables table, ip rules and routes however the daemon
+# ends, so a crash degrades to plain IPv4/IPv6 instead of blackholing IPv6 TCP.
+# cleanup.py needs only the standard library and the state file the daemon
+# wrote, not the configuration, so a broken config can't block it.
+ExecStopPost=+/usr/bin/python3 -s -m v6race.cleanup
+DynamicUser=yes
+RuntimeDirectory=v6race
+RuntimeDirectoryMode=0755
+# No RuntimeDirectoryPreserve: with DynamicUser it moves the directory under
+# root-only /run/private, and ExecStopPost runs before systemd removes it anyway.
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
